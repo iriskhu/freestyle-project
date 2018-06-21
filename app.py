@@ -6,7 +6,7 @@ import requests
 
 
 def menu(username="iriskhu"):
-    ## this is a multi-line string, also using preceding `f` for string interpolation---Prof.'s notes
+    #...below is a multi-line string, also using preceding `f` for string interpolation---Prof.'s notes
     menu = f"""
     ------------------------------------
             SaveMore Bookkeeping
@@ -22,54 +22,45 @@ def menu(username="iriskhu"):
         'Convert'  | Convert an amount to another currency
         'Clear'    | Clear all your records.
 
-    Please select an operation: """ ## end of multi- line string. also using string interpolation---Prof.'s notes
+    Please select an operation: """ #...end of multi- line string. also using string interpolation---Prof.'s notes
     return menu
 
-#http://www.apilayer.net/api/live?access_key=5cbfe5f30bd5dd43f988b7941ddb967c&format=1
+
 
 def parse_response(response_text):
 
-    if isinstance(response_text, str): ## checking to see if the datatype of "response_text" is string---if not, then:
-        response_text = json.loads(response_text) ## converting the string to a dictionary.
+    if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
+        response_text = json.loads(response_text) #...converting the string to a dictionary.
 
     results = []
-    exchange_rate = response_text["quotes"] ## which is a nested dictionary
-    for rates in exchange_rate: ## using for loop to loop through the dictionary's top-level keys/attributes
+    exchange_rate = response_text["quotes"]
+    for rates in exchange_rate:
         print(rates)
 
-#        prices = time_series_daily[trading_date] #> {'1. open': '101.0924', '2. high': '101.9500', '3. low': '100.5400', '4. close': '101.6300', '5. volume': '22165128'}
-#        result = {
-#            "date": trading_date,
-#            "open": prices["1. open"],
-#            "high": prices["2. high"],
-#            "low": prices["3. low"],
-##            "volume": prices["5. volume"]
-#        } ## creating a new dictionary to store initial prices
-#        results.append(result)
     return results
-
 
 
 
 def read_entries_from_file(filename = "entries.csv"):
     filepath = os.path.join(os.path.dirname(__file__), "db", filename)
     print(f"READING PRODUCTS FROM FILE: '{filepath}'")
-    entries = [] ## the next commands are to open the file and populate the products list with product dictionaries)
-    with open(filepath, "r") as csv_file: ## to open file "filepath"
-        reader = csv.DictReader(csv_file) ## to assume your CSV has headers
+    entries = []
+    with open(filepath, "r") as csv_file:
+        reader = csv.DictReader(csv_file) #...to assume the CSV has headers
         for ordered_dict in reader:
-            entries.append(dict(ordered_dict)) ## append.() function: adding stuff to the row
+            entries.append(dict(ordered_dict)) #...append.() function: adding stuff to the row
     return entries
+
 
 def write_entries_to_file(filename="entries.csv", entries=[]):
     filepath = os.path.join(os.path.dirname(__file__), "db", filename)
-    #print(f"OVERWRITING CONTENTS OF FILE: '{filepath}' \n ... WITH {len(products)} PRODUCTS")
     print ("Writing to", filepath)
     with open(filepath, "w") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=["year", "month", "day", "category", "expenses"])
         writer.writeheader()
         for entry in entries:
             writer.writerow({"year": entry["year"], "month": entry["month"], "day": entry["day"], "category": entry["category"], "expenses": entry["expenses"]})
+
 
 def clear_entries_file(filename="entries.csv", from_filename="entries_default.csv"):
     print("CLEARING ENTRIES>>>")
@@ -82,19 +73,18 @@ def clear_entries_file(filename="entries.csv", from_filename="entries_default.cs
 
 
 def run():
-## the run function here is to specify which function is going wrong
+#...the run function here is to specify which function is going wrong---Prof.'s notes
 
     #...to read products from file...
     entries = read_entries_from_file()
 
     #...to prompt the user to select an operation...
-    #number_of_products = len(products) ## reference: in-class workshop
     my_menu = menu(username="iriskhu")
     operation = input(my_menu)
     print("YOU CHOSE: " + operation)
 
-
     operation = operation.title()
+
 
     if operation == "Record":
         print("------------------")
@@ -124,18 +114,19 @@ def run():
         for entry in entries:
             print(">>>" + entry["category"] + ": " + entry["expenses"])
 
+
     elif operation == "Clear":
         print("------------------------")
         clear_entries_file()
 
 
-    elif operation == "Convert":
-        load_dotenv()
+#    elif operation == "Convert":
+#        load_dotenv()
 
-        api_key = os.environ.get("currencylayer_api_key") or "OOPS. Please set an environment variable named 'currencylayer_api_key'."
-        print(api_key)
+#        api_key = os.environ.get("currencylayer_api_key") or "OOPS. Please set an environment variable named 'currencylayer_api_key'."
+#        print(api_key)
 
-        abbreviation
+#        abbreviation
 
 
     else:
