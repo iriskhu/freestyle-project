@@ -3,6 +3,9 @@ import os
 import json
 from dotenv import load_dotenv
 import requests
+import pytest
+import pdb
+
 
 
 def menu(username="iriskhu"):
@@ -27,18 +30,13 @@ def menu(username="iriskhu"):
 
 
 
-def parse_response(response_text):
 
+def parse_response(response_text): #...inspired by Stock-app project
     if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
         response_text = json.loads(response_text) #...converting the string to a dictionary.
 
-    results = []
-    exchange_rate = response_text["quotes"]
-    for rates in exchange_rate:
-        print(rates)
 
-    return results
-
+#pdb.set_trace()
 
 
 def read_entries_from_file(filename = "entries.csv"):
@@ -81,14 +79,14 @@ def run():
     #...to prompt the user to select an operation...
     my_menu = menu(username="iriskhu")
     operation = input(my_menu)
-    print("YOU CHOSE: " + operation)
+    print("YOU'VE CHOSEN: " + operation)
 
     operation = operation.title()
 
 
     if operation == "Record":
         print("------------------")
-        entry_year = input ("What yaer? " )
+        entry_year = input ("What year? " )
         entry_month = input ("What month? " )
         entry_day = input ("What day? ")
         entry_category = input ("What category? ")
@@ -115,19 +113,29 @@ def run():
             print(">>>" + entry["category"] + ": " + entry["expenses"])
 
 
+
+
+
+    elif operation == "Convert":
+        load_dotenv()
+
+        access_key = os.environ.get("CURRENCY_API_KEY") or "OOPS. Please set an environment variable named 'CURRENCY_API_KEY'."
+        print(access_key)  #...for testing purpose
+
+        request_url = f"http://www.apilayer.net/api/live?access_key={access_key}&currencies=CNY&source=USD&format=1"
+        response = requests.get(request_url)
+        print(response.text)
+
+
+#        currencies = parse_response(response.text)
+#        print(currencies)
+
+
+
+
     elif operation == "Clear":
         print("------------------------")
         clear_entries_file()
-
-
-#    elif operation == "Convert":
-#        load_dotenv()
-
-#        api_key = os.environ.get("currencylayer_api_key") or "OOPS. Please set an environment variable named 'currencylayer_api_key'."
-#        print(api_key)
-
-#        abbreviation
-
 
     else:
         print("------------------")

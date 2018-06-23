@@ -1,0 +1,20 @@
+{
+  "success":true,
+  "terms":"https:\/\/currencylayer.com\/terms",
+  "privacy":"https:\/\/currencylayer.com\/privacy",
+  "timestamp":1529558587,
+  "source":"USD",
+  "quotes":{
+    "USDAED":3.672898,
+    "USDAFN":71.300003,
+    "USDALL":108.510002,
+    "USDAMD":481.519989,
+    "USDANG":1.809811,
+    "USDAOA":246.039993,
+    "USDARS":27.722025,
+    "USDAUD":1.3592,
+    "USDAWG":1.78,
+    "USDAZN":1.699501,
+    "USDBAM":1.694597,
+  }
+}
