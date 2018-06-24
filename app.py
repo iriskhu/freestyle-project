@@ -8,46 +8,57 @@ import pdb
 
 
 
-def menu(username="iriskhu"):
-    #...below is a multi-line string, also using preceding `f` for string interpolation---Prof.'s notes
+def menu(username):
     menu = f"""
-    ------------------------------------
-            SaveMore Bookkeeping
-    ------------------------------------
-    Hi {username}, welcome to SaveMore!
-    Here you can record your expenses, calculate the total, and convert it to another currency. Let's get start it!
-        operation  | description
-        ---------  | ------------------
-        'Record'   | Record each one of your expenses
-        'Show'     | Show all the recorded entries
-        'Update'   | Edit an existing entry.
-        'Calculate'| Calculate the total of your entries
-        'Convert'  | Convert an amount to another currency
-        'Clear'    | Clear all your records.
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Hello {username}, welcome to SaveMore!
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    |                       .----.          |
+    |                   _.'__      `.       |
+    |               .--(#)(##)---  /#\      |
+    |             .' @            /###\     |
+    |             :           '  |#####|    |
+    |   HI         `-..__.-' _.---\###/     |
+    |  THERE!    __      `;_:      '"'      |
+    |              \   .'''''''`.           |
+    |               \ /,  SAVE   ' ,        |
+    |                //   MORE!   //        |
+    |                `-._______.-'          |
+    |                ___`. | .'___          |
+    |               (______|______)         |
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     This app will help you set your budget,
+     record your expenses, calculate the total,
+     and convert it to another currency. Before
+     you start, please take a moment to read the
+     description of operations below, thanks!
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     Description of Operations > > >
+                                    v
+                                    v
+       < < < < < < < < < < < < < < <
+      v
+      v
+       > >>> Budget: to set a monthly budget.
+         >>> Record: to record your daily expenses.
+         >>> Show: to show all recorded entries.
+         >>> Update: to edit an existing entry.
+         >>> Calculate: calculate the extisting entries.
+         >>> Convert: convert an amount to another currency.
+         >>> Clear: clear all your records.
 
-    Please select an operation: """ #...end of multi- line string. also using string interpolation---Prof.'s notes
+     Alright! Now let's get started!
+     Please enter an operation: """
     return menu
-
-
+    #...inspired by Inventory-mgmt-app project
+    #...Spoonpy reference: http://tieba.baidu.com/p/976397192?traceid=
 
 
 def parse_response(response_text): #...inspired by Stock-app project
     if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
         response_text = json.loads(response_text) #...converting the string to a dictionary.
 
-
 #pdb.set_trace()
-
-
-def read_entries_from_file(filename = "entries.csv"):
-    filepath = os.path.join(os.path.dirname(__file__), "db", filename)
-    print(f"READING PRODUCTS FROM FILE: '{filepath}'")
-    entries = []
-    with open(filepath, "r") as csv_file:
-        reader = csv.DictReader(csv_file) #...to assume the CSV has headers
-        for ordered_dict in reader:
-            entries.append(dict(ordered_dict)) #...append.() function: adding stuff to the row
-    return entries
 
 
 def write_entries_to_file(filename="entries.csv", entries=[]):
@@ -60,6 +71,17 @@ def write_entries_to_file(filename="entries.csv", entries=[]):
             writer.writerow({"year": entry["year"], "month": entry["month"], "day": entry["day"], "category": entry["category"], "expenses": entry["expenses"]})
 
 
+def read_entries_from_file(filename = "entries.csv"):
+    filepath = os.path.join(os.path.dirname(__file__), "db", filename)
+    #print(f"READING PRODUCTS FROM FILE: '{filepath}'")
+    entries = []
+    with open(filepath, "r") as csv_file:
+        reader = csv.DictReader(csv_file) #...to assume the CSV has headers
+        for ordered_dict in reader:
+            entries.append(dict(ordered_dict)) #...append.() function: adding stuff to the row
+    return entries
+
+
 def clear_entries_file(filename="entries.csv", from_filename="entries_default.csv"):
     print("CLEARING ENTRIES>>>")
     print("OK! YOUR ENTRIES HAVE BEEN CLEARED.")
@@ -70,16 +92,15 @@ def clear_entries_file(filename="entries.csv", from_filename="entries_default.cs
     quit()
 
 
-def run():
-#...the run function here is to specify which function is going wrong---Prof.'s notes
+def run(): #...to specify which function is going wrong---Prof.'s notes
 
-    #...to read products from file...
+    #...reading products from file 'entries.csv'
     entries = read_entries_from_file()
 
-    #...to prompt the user to select an operation...
-    my_menu = menu(username="iriskhu")
+    #...capturing
+    my_menu = menu(username=input(">>> Hi, what's your name? "))
     operation = input(my_menu)
-    print("YOU'VE CHOSEN: " + operation)
+    print("Thanks! You've chosen: " + operation)
 
     operation = operation.title()
 
@@ -120,9 +141,9 @@ def run():
         load_dotenv()
 
         access_key = os.environ.get("CURRENCY_API_KEY") or "OOPS. Please set an environment variable named 'CURRENCY_API_KEY'."
-        print(access_key)  #...for testing purpose
+        #print(access_key)  #...for testing purpose
 
-        request_url = f"http://www.apilayer.net/api/live?access_key={access_key}&currencies=CNY&source=USD&format=1"
+        request_url = f"http://www.apilayer.net/api/live?access_key=c45a7b0a95ea3e22f207f2971ae1b0fa&currencies=CNY&source=USD&format=1"
         response = requests.get(request_url)
         print(response.text)
 
