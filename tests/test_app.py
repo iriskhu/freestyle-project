@@ -1,5 +1,4 @@
 import csv
-import json
 import os
 import pdb
 
@@ -13,9 +12,9 @@ entry = [
 
 def test_write_entries_to_file():
     #setup:
-    write_entries_to_file(entries=entry, filname="tests\example_data.csv")
+    write_entries_to_file(entries=entry, filename="tests\example_entries.csv")
     #test:
-    csv_filepath = os.path.join(os.path.dirname(__file__), "example_data.csv")
+    csv_filepath = os.path.join(os.path.dirname(__file__), "example_entries.csv")
     rows_written = []
     with open(csv_filepath, "r") as csv_file:
         reader = csv.DictReader(csv_file)

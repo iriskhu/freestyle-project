@@ -53,9 +53,9 @@ def menu(username):
     #...Spoonpy reference: http://tieba.baidu.com/p/976397192?traceid=
 
 
-def parse_response(response_text): #...inspired by Stock-app project
-    if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
-        response_text = json.loads(response_text) #...converting the string to a dictionary.
+#def parse_response(response_text): #...inspired by Stock-app project
+#    if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
+#        response_text = json.loads(response_text) #...converting the string to a dictionary.
 #pdb.set_trace()
 
 
@@ -180,25 +180,24 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
         access_key = os.environ.get("CURRENCY_API_KEY") or "OOPS. Please set an environment variable named 'CURRENCY_API_KEY'."
         #print(access_key)  #...for testing purpose
         currency_code = input ("Please enter the code of a currency you want to convert to (e.g: CNY): ")
+
         if len(currency_code)>3:
             print("Oops! Please try again. Expecting a currency code with 3 digits.")
-
         else:
-
             try: ## try function allows us to handle errors---Prof.'s notes
                 float(currency_code)
                 quit("Oops! Please try again. Expecting a non-numeric currency code.")
             except ValueError as e:
-                request_url = f"https://v3.exchangerate-api.com/pair/9ec48c336430290c866b336f/USD/{currency_code}"
+                request_url = f"https://v3.exchangerate-api.com/pair/{access_key}/USD/{currency_code}"
                 response = requests.get(request_url)
                 #print(response.text)  #...for testing purpose
 
-                if "error" in response.text: #...used pdb.set_trace() to test out "error" in response_text
+                if "error" in response.text: #...used pdb.set_trace() to test out "error" in response.text
                     print(" >.< OH NO! Your currency code cannot be found. Please Try again.")
                     quit()
                 else:
-                    data = response.json()  #...reference: https://www.exchangerate-api.com/python-currency-api
-                    print("The current exchange rate you are requesting is: " + str(data["rate"]))  #...variable 'data' is provided by
+                    data = response.json()  #...the website providing the api key suggests the variable 'data'. Reference: https://www.exchangerate-api.com/python-currency-api
+                    print("The current exchange rate you are requesting is: " + str(data["rate"]))
                     print("------------------")
 
 
