@@ -40,11 +40,11 @@ def menu(username):
        < < < < < < < < < < < < < < <
       v
       v
-       > >>> Record: to record your daily expenses.
-         >>> Show: to show recorded entries.
-         >>> Calculate: to calculate total expenses.
-         >>> Convert: to convert to a different currency.
-         >>> Clear: to clear all your records and start over.
+       > >>> Record: to record your expenses.
+         >>> Show: to view information of recorded expenses.
+         >>> Calculate: to calculate the total of all recorded expenses.
+         >>> Convert: to convert the total of all expense to a different currency.
+         >>> Clear: to clear all recorded expenses and start over.
 
      Alright! Now let's get started!
      Please enter an operation: """
@@ -161,13 +161,13 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
 
         residual = float(monthly_budget) - sum
         if residual > 0:
-            print("Looks good! You have spent $" + str("{0:.2f}".format(sum)) + " so far this month---$" + str("{0:.2f}".format(residual)) + " away from your monthly budget! Yay!")
+            print("Looks good! You have spent $" + str("{0:.2f}".format(sum)) + " so far this month---$" + str("{0:.2f}".format(residual)) + " away from your monthly budget, $" + str("{0:.2f}".format(float(monthly_budget))) + "! Yay!")
             print("------------------")
         elif residual == 0:
-            print("Oops---you've reached your monthly budget.")
+            print("Oops---you've reached your monthly budget, " + str("{0:.2f}".format(float(monthly_budget))))
             print("------------------")
         else:
-            print("Oops, you've spent $" + str("{0:.2f}".format(sum)) + " so far this month---more than your monthly budget, $" + monthly_budget + ". Try spending less next month!")
+            print("Oops, you've spent $" + str("{0:.2f}".format(sum)) + " so far this month---more than your monthly budget, $" + str("{0:.2f}".format(float(monthly_budget))) + ". Try spending less next month!")
             print("------------------")
 
 
@@ -185,7 +185,7 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
                 float(currency_code)
                 quit("Oops! Please try again. Expecting a non-numeric currency code.")
             except ValueError as e:
-                request_url = f"https://v3.exchangerate-api.com/pair/9ec48c336430290c866b336f/USD/{currency_code}"
+                request_url = f"https://v3.exchangerate-api.com/pair/{access_key}/USD/{currency_code}"
                 response = requests.get(request_url)
                 #print(response.text)  #...for testing purpose
 
@@ -202,7 +202,7 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
                         int_entry = float(entry["expense"])
                         total += int_entry
                     total_converted = total*data["rate"]
-                    print("The total amount of your spending so far this month equals to " + str("${0:.2f}".format(total_converted)) + " in the currency you inquired.")
+                    print("The total amount of your spending so far this month equals to " + str("{0:.2f}".format(total_converted)) + " in the currency you inquired.")
                     print("------------------")
 
 
