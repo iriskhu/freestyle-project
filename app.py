@@ -42,7 +42,6 @@ def menu(username):
       v
        > >>> Record: to record your daily expenses.
          >>> Show: to show all recorded entries.
-         >>> Update: to edit an existing entry.
          >>> Calculate: calculate the extisting entries.
          >>> Convert: convert an amount to another currency.
          >>> Clear: clear all your records.
@@ -54,10 +53,9 @@ def menu(username):
     #...Spoonpy reference: http://tieba.baidu.com/p/976397192?traceid=
 
 
-#def parse_response(response_text): #...inspired by Stock-app project
-#    if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
-#        response_text = json.loads(response_text) #...converting the string to a dictionary.
-
+def parse_response(response_text): #...inspired by Stock-app project
+    if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
+        response_text = json.loads(response_text) #...converting the string to a dictionary.
 #pdb.set_trace()
 
 
@@ -137,7 +135,7 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
             print("------------------")
             print("Here are your entries so far:")
             for entry in entries:
-                print(">>>" + entry["day"] + "," + entry["category"] + ": $" + entry["expense"])
+                print(">>> " + entry["day"] + "," + entry["category"] + ": $" + entry["expense"])
             print("------------------")
 
         elif choice == "C": #...todo: provide a chart of catogories
@@ -152,9 +150,15 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
             print(">>> So far your money has been spent on: " + str(categories))
             print("------------------")
 
+        else:
+            print("------------------")
+            print("Oops, please try again. Please type 'A' or 'C'.")
+            print("------------------")
+
 
     elif operation == "Calculate":
         monthly_budget = input("Please enter your monthly budget: ")
+        print("------------------")
 
         sum = 0  #...reference: https://stackoverflow.com/questions/4362586/sum-a-list-of-numbers-in-python
         for entry in entries:
@@ -164,29 +168,44 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
         residual = int(monthly_budget) - sum
         if residual > 0:
             print("Looks good! You have spent $" + str(sum) + " so far this month---$" + str(residual) + " away from your monthly budget! Yay!")
+            print("------------------")
         else:
             print("Oops, you've spent $" + str(sum) + " so far this month---more than your monthly budget. Try spending less next month!")
+            print("------------------")
 
 
     elif operation == "Convert":
         load_dotenv()
-        
+
         access_key = os.environ.get("CURRENCY_API_KEY") or "OOPS. Please set an environment variable named 'CURRENCY_API_KEY'."
-        currency_code = input ("Please enter the code of a currency you want to convert to: ")
         #print(access_key)  #...for testing purpose
+        currency_code = input ("Please enter the code of a currency you want to convert to (e.g: CNY): ")
+        if len(currency_code)>3:
+            print("Oops! Please try again. Expecting a currency code with 3 digits.")
 
-        request_url = f"https://v3.exchangerate-api.com/pair/9ec48c336430290c866b336f/USD/{currency_code}"
-        response = requests.get(request_url)
-        #print(response.text)  #...for testing purpose
+        else:
 
-        data = response.json()  #...reference: https://www.exchangerate-api.com/python-currency-api
+            try: ## try function allows us to handle errors---Prof.'s notes
+                float(currency_code)
+                quit("Oops! Please try again. Expecting a non-numeric currency code.")
+            except ValueError as e:
+                request_url = f"https://v3.exchangerate-api.com/pair/9ec48c336430290c866b336f/USD/{currency_code}"
+                response = requests.get(request_url)
+                #print(response.text)  #...for testing purpose
 
-        print("The current exchange rate you are requesting is: " + str(data["rate"]))  #...variable 'data' is provided by
+                if "error" in response.text: #...used pdb.set_trace() to test out "error" in response_text
+                    print(" >.< OH NO! Your currency code cannot be found. Please Try again.")
+                    quit()
+                else:
+                    data = response.json()  #...reference: https://www.exchangerate-api.com/python-currency-api
+                    print("The current exchange rate you are requesting is: " + str(data["rate"]))  #...variable 'data' is provided by
+                    print("------------------")
 
 
     elif operation == "Clear":
         print("------------------------")
         clear_entries_file()
+
 
     else:
         print("------------------")
