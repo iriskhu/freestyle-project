@@ -15,10 +15,10 @@ def menu(username):
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     |                       .----.          |
     |                   _.'__      `.       |
-    |               .--(#)(##)---  /#\      |
-    |             .' @            /###\     |
-    |             :           '  |#####|    |
-    |   HI         `-..__.-' _.---\###/     |
+    |               .--($)($$)---  /$\      |
+    |             .' @            /$$$\     |
+    |             :           '  |$$$$$|    |
+    |   HI         `-..__.-' _.---\$$$/     |
     |  THERE!    __      `;_:      '"'      |
     |              \   .'''''''`.           |
     |               \ /,  SAVE   ' ,        |
@@ -76,10 +76,10 @@ def write_entries_to_file(filename="entries.csv", entries=[]):
     filepath = os.path.join(os.path.dirname(__file__), "db", filename)
     print ("Writing to", filepath)
     with open(filepath, "w") as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=["year", "month", "day", "category", "expenses"])
+        writer = csv.DictWriter(csv_file, fieldnames=["year", "month", "day", "category", "expense"])
         writer.writeheader()
         for entry in entries:
-            writer.writerow({"year": entry["year"], "month": entry["month"], "day": entry["day"], "category": entry["category"], "expenses": entry["expenses"]})
+            writer.writerow({"year": entry["year"], "month": entry["month"], "day": entry["day"], "category": entry["category"], "expense": entry["expense"]})
 
 
 def clear_entries_file(filename="entries.csv", from_filename="entries_default.csv"):
@@ -113,18 +113,18 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
         entry_month = input ("Please enter the month (2 digits, e.g: 04): " )
         entry_day = input ("Please enter the day (2 digits, e.g: 01): ")
         entry_category = input ("Please enter the category (e.g: snacks): ")
-        entry_expenses = input ("Please enter the amount you paid: ")
+        entry_expense = input ("Please enter the amount you paid: ")
 
         new_entry = {
             "year": entry_year,
             "month": entry_month,
             "day": entry_day,
             "category": entry_category,
-            "expenses": "$" + entry_expenses
+            "expense": entry_expense
         }
         entries.append(new_entry)
         print("------------------")
-        print(new_entry["year"] + "-" + new_entry["month"] + "-" + new_entry["day"] + ", " + new_entry["category"] + ": " + new_entry["expenses"])
+        print(new_entry["year"] + "-" + new_entry["month"] + "-" + new_entry["day"] + ", " + new_entry["category"] + ": $" + new_entry["expense"])
         print("------------------")
         print("Congrats! You just recoreded a new entry! Keep it up!")
 
@@ -137,7 +137,7 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
             print("------------------")
             print("Here are your entries so far:")
             for entry in entries:
-                print(">>>" + entry["day"] + "," + entry["category"] + ": " + entry["expenses"])
+                print(">>>" + entry["day"] + "," + entry["category"] + ": $" + entry["expense"])
             print("------------------")
 
         elif choice == "C": #...todo: provide a chart of catogories
@@ -156,21 +156,32 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
     elif operation == "Calculate":
         monthly_budget = input("Please enter your monthly budget: ")
 
-        print(monthly_budget)
+        sum = 0  #...reference: https://stackoverflow.com/questions/4362586/sum-a-list-of-numbers-in-python
+        for entry in entries:
+            int_entry = int(entry["expense"])
+            sum += int_entry
+
+        residual = int(monthly_budget) - sum
+        if residual > 0:
+            print("Looks good! You have spent $" + str(sum) + " so far this month---$" + str(residual) + " away from your monthly budget! Yay!")
+        else:
+            print("Oops, you've spent $" + str(sum) + " so far this month---more than your monthly budget. Try spending less next month!")
 
 
     elif operation == "Convert":
         load_dotenv()
-
+        
         access_key = os.environ.get("CURRENCY_API_KEY") or "OOPS. Please set an environment variable named 'CURRENCY_API_KEY'."
+        currency_code = input ("Please enter the code of a currency you want to convert to: ")
         #print(access_key)  #...for testing purpose
 
-        request_url = f"http://www.apilayer.net/api/live?access_key=c45a7b0a95ea3e22f207f2971ae1b0fa&currencies=CNY&source=USD&format=1"
+        request_url = f"https://v3.exchangerate-api.com/pair/9ec48c336430290c866b336f/USD/{currency_code}"
         response = requests.get(request_url)
-        print(response.text)
+        #print(response.text)  #...for testing purpose
 
-#        currencies = parse_response(response.text)
-#        print(currencies)
+        data = response.json()  #...reference: https://www.exchangerate-api.com/python-currency-api
+
+        print("The current exchange rate you are requesting is: " + str(data["rate"]))  #...variable 'data' is provided by
 
 
     elif operation == "Clear":
