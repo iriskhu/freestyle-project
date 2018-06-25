@@ -41,10 +41,10 @@ def menu(username):
       v
       v
        > >>> Record: to record your daily expenses.
-         >>> Show: to show all recorded entries.
-         >>> Calculate: calculate the extisting entries.
-         >>> Convert: convert an amount to another currency.
-         >>> Clear: clear all your records.
+         >>> Show: to show recorded entries.
+         >>> Calculate: to calculate total expenses.
+         >>> Convert: to convert to a different currency.
+         >>> Clear: to clear all your records and start over.
 
      Alright! Now let's get started!
      Please enter an operation: """
@@ -53,14 +53,8 @@ def menu(username):
     #...Spoonpy reference: http://tieba.baidu.com/p/976397192?traceid=
 
 
-#def parse_response(response_text): #...inspired by Stock-app project
-#    if isinstance(response_text, str): #...checking to see if the datatype of "response_text" is string---if not, then:
-#        response_text = json.loads(response_text) #...converting the string to a dictionary.
-#pdb.set_trace()
-
-
 def read_entries_from_file(filename = "entries.csv"):
-    filepath = os.path.join(os.path.dirname(__file__), "db", filename)
+    filepath = os.path.join(os.path.dirname(__file__), filename)
     #print(f"READING PRODUCTS FROM FILE: '{filepath}'")
     entries = []
     with open(filepath, "r") as csv_file:
@@ -71,7 +65,7 @@ def read_entries_from_file(filename = "entries.csv"):
 
 
 def write_entries_to_file(filename="entries.csv", entries=[]):
-    filepath = os.path.join(os.path.dirname(__file__), "db", filename)
+    filepath = os.path.join(os.path.dirname(__file__), filename)
     print ("Writing to", filepath)
     with open(filepath, "w") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=["year", "month", "day", "category", "expense"])
@@ -81,9 +75,8 @@ def write_entries_to_file(filename="entries.csv", entries=[]):
 
 
 def clear_entries_file(filename="entries.csv", from_filename="entries_default.csv"):
-    print("CLEARING ENTRIES>>>")
-    print("OK! YOUR ENTRIES HAVE BEEN CLEARED.")
-    print("TIME TO START A NEW MONTHLY RECORD!")
+    print("Clearing entries >>>")
+    print("OK! Your entries have been cleared. Time to start a new monthly record!")
     print("------------------------------------")
     entries = read_entries_from_file(from_filename)
     write_entries_to_file(filename, entries)
@@ -122,7 +115,7 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
         }
         entries.append(new_entry)
         print("------------------")
-        print(new_entry["year"] + "-" + new_entry["month"] + "-" + new_entry["day"] + ", " + new_entry["category"] + ": $" + new_entry["expense"])
+        print(new_entry["year"] + "-" + new_entry["month"] + "-" + new_entry["day"] + ", " + new_entry["category"] + ": $" + (new_entry["expense"]))
         print("------------------")
         print("Congrats! You just recoreded a new entry! Keep it up!")
 
@@ -135,10 +128,10 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
             print("------------------")
             print("Here are your entries so far:")
             for entry in entries:
-                print(">>> " + entry["day"] + "," + entry["category"] + ": $" + entry["expense"])
+                print(">>> " + entry["month"] + "-" + entry["day"] + ", " + entry["category"] + ": $" + entry["expense"])
             print("------------------")
 
-        elif choice == "C": #...todo: provide a chart of catogories
+        elif choice == "C":
             categories = []
             for entry in entries:
                 categories.append(entry["category"])
@@ -162,15 +155,19 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
 
         sum = 0  #...reference: https://stackoverflow.com/questions/4362586/sum-a-list-of-numbers-in-python
         for entry in entries:
-            int_entry = int(entry["expense"])
+            int_entry = float(entry["expense"])
             sum += int_entry
+        #print(sum)  #...for testing purpose
 
-        residual = int(monthly_budget) - sum
+        residual = float(monthly_budget) - sum
         if residual > 0:
-            print("Looks good! You have spent $" + str(sum) + " so far this month---$" + str(residual) + " away from your monthly budget! Yay!")
+            print("Looks good! You have spent $" + str("{0:.2f}".format(sum)) + " so far this month---$" + str("{0:.2f}".format(residual)) + " away from your monthly budget! Yay!")
+            print("------------------")
+        elif residual == 0:
+            print("Oops---you've reached your monthly budget.")
             print("------------------")
         else:
-            print("Oops, you've spent $" + str(sum) + " so far this month---more than your monthly budget. Try spending less next month!")
+            print("Oops, you've spent $" + str("{0:.2f}".format(sum)) + " so far this month---more than your monthly budget, $" + monthly_budget + ". Try spending less next month!")
             print("------------------")
 
 
@@ -188,7 +185,7 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
                 float(currency_code)
                 quit("Oops! Please try again. Expecting a non-numeric currency code.")
             except ValueError as e:
-                request_url = f"https://v3.exchangerate-api.com/pair/{access_key}/USD/{currency_code}"
+                request_url = f"https://v3.exchangerate-api.com/pair/9ec48c336430290c866b336f/USD/{currency_code}"
                 response = requests.get(request_url)
                 #print(response.text)  #...for testing purpose
 
@@ -198,6 +195,14 @@ def run(): #...to specify which function is going wrong---Prof.'s notes
                 else:
                     data = response.json()  #...the website providing the api key suggests the variable 'data'. Reference: https://www.exchangerate-api.com/python-currency-api
                     print("The current exchange rate you are requesting is: " + str(data["rate"]))
+                    print("------------------")
+
+                    total = 0  #...reference: https://stackoverflow.com/questions/4362586/sum-a-list-of-numbers-in-python
+                    for entry in entries:
+                        int_entry = float(entry["expense"])
+                        total += int_entry
+                    total_converted = total*data["rate"]
+                    print("The total amount of your spending so far this month equals to " + str("${0:.2f}".format(total_converted)) + " in the currency you inquired.")
                     print("------------------")
 
 
